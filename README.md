@@ -32,45 +32,51 @@ Performance Metrics: Evaluation using RMSE, MAE, MAPE, and R² to ensure robust 
 2. Hardware: Pyranometers, solar panels, and digital thermometers, digitial multimeter for data collection.
 
 ## Code Workflow
-Load Data for Each Day:
 
-```matlab
+1. Load Data for Each Day:
+
+```matlab```
 
 data_monday = readtable('solar_data_mon_27th.csv');
 data_tuesday = readtable('solar_data_tue_28th.csv');
-% (Repeat for other days) ```
+% (Repeat for other days)
 
-Extract Inputs and Targets:
 
-matlab
-Copy code
+2. Extract Inputs and Targets:
+
+```matlab```
+
 inputs_monday = [data_monday.SolarIrradiance, data_monday.Current, ...];
 targets_monday = data_monday.Power;
-Train the ANN Model:
 
-matlab
-Copy code
+3. Train the ANN Model:
+
+```matlab```
+
 [mae_monday, rmse_monday, r2_monday, outputs_monday] = ...
     train_and_test_ann(inputs_monday, targets_monday, inputs_monday, targets_monday);
-Plot Predicted vs. Actual Power:
+    
+4. Plot Predicted vs. Actual Power:
 
-matlab
-Copy code
+```matlab```
+
 figure;
 plot(time_monday, targets_monday, 'b-', 'LineWidth', 2);
 plot(time_monday, predicted_monday, 'r-', 'LineWidth', 2);
 legend('Actual', 'Predicted');
 grid on;
-Overall Performance Metrics:
 
-matlab
-Copy code
+5. Overall Performance Metrics:
+
+```matlab```
+
 mae_week = mean([mae_monday, mae_tuesday, ...]);
 fprintf('MAE: %.2f W\n', mae_week);
-ANN Training Function:
 
-matlab
-Copy code
+6. ANN Training Function:
+
+```matlab```
+
 function [mae, rmse, r2, outputs] = train_and_test_ann(inputs_training, targets_training, ...)
     net = fitnet(10); % Hidden layer size of 10
     net.trainFcn = 'trainlm'; % Levenberg-Marquardt algorithm
@@ -78,7 +84,8 @@ function [mae, rmse, r2, outputs] = train_and_test_ann(inputs_training, targets_
     net = train(net, inputs_training', targets_training');
     outputs = sim(net, inputs_testing');
 end
-Results
+
+## Results
 MAE: Achieved low errors between 0.32% to 0.60%.
 RMSE and R²: Validated the accuracy and reliability of the predictions.
 Outcome: The ANN model enabled early project completion and effective solar power forecasting for grid stability.
