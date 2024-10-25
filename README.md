@@ -1,4 +1,5 @@
 # ANN-Forecasting-for-Solar-Power
+
 ## Project Overview
 This project focuses on forecasting solar power generation using Artificial Neural Networks (ANN). The motivation stems from the need to enhance accuracy in solar power predictions, which is critical for balancing energy generation with demand. ANN models were selected due to their ability to model complex relationships in weather and solar data, outperforming traditional methods in prediction precision.
 
@@ -82,7 +83,8 @@ function [mae, rmse, r2, outputs] = train_and_test_ann(inputs_training, targets_
     net.trainParam.epochs = 8000;
     net = train(net, inputs_training', targets_training');
     outputs = sim(net, inputs_testing');
-end```
+end
+
 
 
 ## Results
