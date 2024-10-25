@@ -35,7 +35,7 @@ Performance Metrics: Evaluation using RMSE, MAE, MAPE, and R² to ensure robust 
 
 1. Load Data for Each Day:
 
-```matlab
+
 
 data_monday = readtable('solar_data_mon_27th.csv');
 data_tuesday = readtable('solar_data_tue_28th.csv');
@@ -44,20 +44,20 @@ data_tuesday = readtable('solar_data_tue_28th.csv');
 
 2. Extract Inputs and Targets:
 
-```matlab
+
 inputs_monday = [data_monday.SolarIrradiance, data_monday.Current, ...];
 targets_monday = data_monday.Power;
 
 3. Train the ANN Model:
 
-```matlab
+
 
 [mae_monday, rmse_monday, r2_monday, outputs_monday] = ...
     train_and_test_ann(inputs_monday, targets_monday, inputs_monday, targets_monday);
     
 4. Plot Predicted vs. Actual Power:
 
-```matlab
+
 
 figure;
 plot(time_monday, targets_monday, 'b-', 'LineWidth', 2);
@@ -67,14 +67,14 @@ grid on;
 
 5. Overall Performance Metrics:
 
-```matlab
+
 
 mae_week = mean([mae_monday, mae_tuesday, ...]);
 fprintf('MAE: %.2f W\n', mae_week);
 
 6. ANN Training Function:
 
-```matlab
+
 
 function [mae, rmse, r2, outputs] = train_and_test_ann(inputs_training, targets_training, ...)
     net = fitnet(10); % Hidden layer size of 10
@@ -82,7 +82,8 @@ function [mae, rmse, r2, outputs] = train_and_test_ann(inputs_training, targets_
     net.trainParam.epochs = 8000;
     net = train(net, inputs_training', targets_training');
     outputs = sim(net, inputs_testing');
-end
+end```
+
 
 ## Results
 MAE: Achieved low errors between 0.32% to 0.60%.
