@@ -34,6 +34,8 @@ Performance Metrics: Evaluation using RMSE, MAE, MAPE, and R² to ensure robust 
 
 ## Code Workflow
 
+```matlab
+
 1. Load Data for Each Day:
 
 
@@ -83,7 +85,7 @@ function [mae, rmse, r2, outputs] = train_and_test_ann(inputs_training, targets_
     net.trainParam.epochs = 8000;
     net = train(net, inputs_training', targets_training');
     outputs = sim(net, inputs_testing');
-end
+end```
 
 
 
