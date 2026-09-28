@@ -1,7 +1,7 @@
 # ANN-Forecasting-for-Solar-Power
 
 ## Project Overview
-This project focuses on forecasting solar power generation using Artificial Neural Networks (ANN). The motivation stems from the need to enhance accuracy in solar power predictions, which is critical for balancing energy generation with demand. ANN models were selected due to their ability to model complex relationships in weather and solar data, outperforming traditional methods in prediction precision.
+This project focuses on forecasting solar power generation using Artificial Neural Networks (ANN). The motivation stems from the need to enhance accuracy in solar power predictions, which is critical for balancing energy generation with demand. ANN models were selected due to their ability to model complex relationships in weather and solar data.
 
 ## Problem Statement
 Solar energy generation is inherently variable due to factors like weather conditions, which complicates energy planning and management. Existing methods for forecasting solar power often suffer from inaccuracies, leading to inefficiencies in power grids. This project proposes an ANN-based approach to address these limitations, ensuring better solar energy forecasting.
@@ -18,10 +18,26 @@ The process involves:
 1. Data Collection: Solar data was gathered using pyranometers, solar panels, and sensors at Olabisi Onabanjo University, Ogun State.
 2. Preprocessing: Data was cleaned, normalized, and split into training, validation, and testing sets to ensure high-quality input for the ANN.
 3. Model Development: A feedforward ANN was designed and trained using the Levenberg-Marquardt algorithm.
-4. Testing and Validation: The model's performance was evaluated against several metrics to ensure forecasting accuracy.
+4. Testing and Validation: Performance was evaluated using several metrics. See "Results and Evaluation Notes" for limitations of the original evaluation.
    
-## Results
-The ANN model achieved high accuracy with a low Mean Absolute Percentage Error (MAPE) ranging between 0.32% to 0.60%. The forecasting outcomes provide a reliable basis for managing solar energy resources, demonstrating the ANN model’s capability to enhance energy planning.
+## Results and Evaluation Notes
+
+**Correction (added after re-evaluation).** The 0.32%–0.60% MAPE originally reported
+here was computed in `Untitled33.m` / `UntitledRMSE.m` by comparing `Current × Voltage`
+against measured `Power`. It does not measure the ANN's predictions. Two further
+limitations of the original setup:
+
+- The ANN inputs included Current and Voltage, and Power is almost exactly their
+  product, so the network was not forecasting from weather alone.
+- `train_and_test_ann` was called with the same data for training and testing, so it
+  gives no held-out estimate of accuracy.
+
+**Corrected re-implementation.** A Python version with held-out-day cross-validation
+is here: [(https://github.com/OluwafisayoIbrahim/solar-power-prediction-python)]. With weather inputs only (irradiance, temperature,
+humidity, hour), the tuned ANN reaches about 4.6% MAPE (R² ≈ 0.71) on unseen days,
+only marginally better than linear regression on 189 samples.
+
+The MATLAB code in this repository is kept unchanged as a record of the original work.
 
 ## Key Features
 ANN Architecture: Feedforward network trained on weather and electrical data.
@@ -57,6 +73,8 @@ targets_monday = data_monday.Power;
 
 [mae_monday, rmse_monday, r2_monday, outputs_monday] = ...
     train_and_test_ann(inputs_monday, targets_monday, inputs_monday, targets_monday);
+
+Note: in this original workflow, the same data is passed as both training and testing input.
     
 4. Plot Predicted vs. Actual Power:
 
@@ -86,10 +104,3 @@ function [mae, rmse, r2, outputs] = train_and_test_ann(inputs_training, targets_
     net = train(net, inputs_training', targets_training');
     outputs = sim(net, inputs_testing');
 end```
-
-
-
-## Results
-MAE: Achieved low errors between 0.32% to 0.60%.
-RMSE and R²: Validated the accuracy and reliability of the predictions.
-Outcome: The ANN model enabled early project completion and effective solar power forecasting for grid stability.
