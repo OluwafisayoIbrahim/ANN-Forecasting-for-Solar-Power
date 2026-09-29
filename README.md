@@ -32,10 +32,24 @@ limitations of the original setup:
 - `train_and_test_ann` was called with the same data for training and testing, so it
   gives no held-out estimate of accuracy.
 
-**Corrected re-implementation.** A Python version with held-out-day cross-validation
-is here: [(https://github.com/OluwafisayoIbrahim/solar-power-prediction-python)]. With weather inputs only (irradiance, temperature,
-humidity, hour), the tuned ANN reaches about 4.6% MAPE (R² ≈ 0.71) on unseen days,
-only marginally better than linear regression on 189 samples.
+**Corrected re-implementation.** A Python version with grouped, held-out-day
+cross-validation is here: [(https://github.com/OluwafisayoIbrahim/solar-power-prediction-python)].. Two feature sets were compared:
+one matching the original inputs (current and voltage included), and one using
+only weather inputs (irradiance, temperature, humidity, hour).
+
+| Track | Model | MAPE | R² |
+|---|---|---|---|
+| Original inputs (current & voltage) | Physics baseline (no learning) | 0.45% | 0.998 |
+| Original inputs (current & voltage) | Tuned ANN | 0.44% | 0.997 |
+| Weather only | Linear regression | 4.85% | 0.701 |
+| Weather only | Tuned ANN | 4.79% | 0.703 |
+
+With current and voltage included, a plain calculation (no model at all) matches
+the tuned ANN's accuracy, confirming the leakage. With weather-only inputs — the
+actual forecasting problem — the tuned ANN performs about the same as linear
+regression, and an untuned network of the original architecture performs
+noticeably worse (5.70% MAPE, R² 0.19), indicating it overfits this small
+(189-row) dataset.
 
 The MATLAB code in this repository is kept unchanged as a record of the original work.
 
