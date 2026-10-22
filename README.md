@@ -1,120 +1,215 @@
 # ANN-Forecasting-for-Solar-Power
 
 ## Project Overview
-This project focuses on forecasting solar power generation using Artificial Neural Networks (ANN). The motivation stems from the need to enhance accuracy in solar power predictions, which is critical for balancing energy generation with demand. ANN models were selected due to their ability to model complex relationships in weather and solar data.
+
+This repository documents my undergraduate research project on solar power prediction using Artificial Neural Networks (ANN), completed at Olabisi Onabanjo University in 2023.
+
+The project explored the application of machine learning to solar energy systems by developing a feedforward neural network in MATLAB to estimate solar power output from environmental and electrical measurements.
+
+It includes the original MATLAB implementation, experimental data, model evaluation, and visualisation procedures. The study was subsequently revisited and extended in Python to improve experimental validation and assess the reliability of the original findings.
 
 ## Problem Statement
-Solar energy generation is inherently variable due to factors like weather conditions, which complicates energy planning and management. Existing methods for forecasting solar power often suffer from inaccuracies, leading to inefficiencies in power grids. This project proposes an ANN-based approach to address these limitations, ensuring better solar energy forecasting.
 
-## Key Objectives
-1. Data Acquisition: Collect solar irradiance, temperature, voltage, and other environmental parameters as inputs.
-2. Model Design: Develop an ANN architecture to forecast solar power generation accurately.
-3. Implementation: Use MATLAB to train and test the ANN model on real-world data.
-4. Performance Evaluation: Measure model effectiveness using metrics like MAE, RMSE, MAPE, and R².
+Solar power generation varies with environmental conditions, including solar irradiance, temperature, and humidity. Predicting solar power output can support energy planning, operational monitoring, and renewable energy management.
+
+This project investigated whether an artificial neural network could model relationships between measured environmental and electrical variables and solar power generation.
+
+The objective was to explore the use of ANN-based prediction in renewable energy systems and evaluate its performance using experimentally collected data.
+
+## Research Objectives
+
+1. Collect and organise solar irradiance, temperature, humidity, current, voltage, and power measurements.
+2. Design and implement a feedforward artificial neural network in MATLAB.
+3. Train the model using the Levenberg–Marquardt optimisation algorithm.
+4. Evaluate model predictions using regression error metrics.
+5. Investigate the suitability and limitations of ANN-based solar power prediction.
+
+## Dataset
+
+The research used measurements collected at Olabisi Onabanjo University, Ogun State, Nigeria, using solar panels and measurement instruments.
+
+The dataset contains 189 measurements collected over 21 days, with approximately nine observations recorded per day between 8:00 AM and 4:00 PM.
+
+The recorded variables include:
+
+- Time
+- Solar irradiance
+- Temperature
+- Humidity
+- Current
+- Voltage
+- Power
+
+These measurements were used to train and evaluate the original MATLAB model and later supported the Python re-evaluation.
 
 ## Methodology
-The process involves:
 
-1. Data Collection: Solar data was gathered using pyranometers, solar panels, and sensors at Olabisi Onabanjo University, Ogun State.
-2. Preprocessing: Data was cleaned, normalized, and split into training, validation, and testing sets to ensure high-quality input for the ANN.
-3. Model Development: A feedforward ANN was designed and trained using the Levenberg-Marquardt algorithm.
-4. Testing and Validation: Performance was evaluated using several metrics. See "Results and Evaluation Notes" for limitations of the original evaluation.
-   
+### 1. Data Collection and Preparation
+
+Solar measurements were collected and stored in daily CSV files.
+
+The MATLAB scripts used `readtable()` to load the measurements, combined daily observations into tabular datasets, and prepared input and target variables for neural-network training.
+
+The original implementation included random training, validation, and testing splits, alongside per-day training and evaluation procedures.
+
+### 2. Neural Network Architecture
+
+A feedforward Multilayer Perceptron (MLP) was implemented using MATLAB's Neural Network Toolbox.
+
+The network configuration included:
+
+- MATLAB `fitnet(10)`
+- One hidden layer containing 10 neurons
+- Hyperbolic tangent sigmoid (`tansig`) hidden-layer activation
+- Linear (`purelin`) output activation
+- Levenberg–Marquardt backpropagation (`trainlm`)
+- Input and target normalisation using `mapminmax()` in the daily training function
+
+The implementation explored the ability of a relatively small neural network to learn relationships between the measured input variables and solar power output.
+
+### 3. Model Training
+
+The network was trained using the Levenberg–Marquardt optimisation algorithm.
+
+Training configurations included maximum epoch settings of 8,000 and 9,000 in different scripts.
+
+The MATLAB implementation also used training, validation, and testing procedures to examine prediction errors.
+
+### 4. Model Evaluation
+
+The original code calculated several regression metrics, including:
+
+- Mean Squared Error (MSE)
+- Root Mean Squared Error (RMSE)
+- Mean Absolute Error (MAE)
+- Mean Absolute Percentage Error (MAPE)
+- Coefficient of Determination (R²)
+
 ## Results and Evaluation Notes
 
-**Correction (added after re-evaluation).** The 0.32%–0.60% MAPE originally reported
-here was computed in `Untitled33.m` / `UntitledRMSE.m` by comparing `Current × Voltage`
-against measured `Power`. It does not measure the ANN's predictions. Two further
-limitations of the original setup:
+The study initially reported low prediction errors. A subsequent review of the MATLAB scripts identified limitations in the original experimental and evaluation procedures, particularly in the way training data, testing data, and reported predictions were handled.
 
-- The ANN inputs included Current and Voltage, and Power is almost exactly their
-  product, so the network was not forecasting from weather alone.
-- `train_and_test_ann` was called with the same data for training and testing, so it
-  gives no held-out estimate of accuracy.
+The principal limitations are described below.
 
-**Corrected re-implementation.** A Python version with grouped, held-out-day
-cross-validation is here: [(https://github.com/OluwafisayoIbrahim/solar-power-prediction-python)].. Two feature sets were compared:
-one matching the original inputs (current and voltage included), and one using
-only weather inputs (irradiance, temperature, humidity, hour).
+### 1. Reuse of Training Data for Testing
 
-| Track | Model | MAPE | R² |
-|---|---|---|---|
-| Original inputs (current & voltage) | Physics baseline (no learning) | 0.45% | 0.998 |
-| Original inputs (current & voltage) | Tuned ANN | 0.44% | 0.997 |
-| Weather only | Linear regression | 4.85% | 0.701 |
-| Weather only | Tuned ANN | 4.79% | 0.703 |
+In the daily MATLAB experiments, the same observations were supplied as both training and testing inputs.
 
-With current and voltage included, a plain calculation (no model at all) matches
-the tuned ANN's accuracy, confirming the leakage. With weather-only inputs — the
-actual forecasting problem — the tuned ANN performs about the same as linear
-regression, and an untuned network of the original architecture performs
-noticeably worse (5.70% MAPE, R² 0.19), indicating it overfits this small
-(189-row) dataset.
+This meant that the resulting evaluations did not independently demonstrate how well the model could generalise to previously unseen days.
 
-The MATLAB code in this repository is kept unchanged as a record of the original work.
+### 2. Random Splitting of Individual Measurements
 
-## Key Features
-ANN Architecture: Feedforward network trained on weather and electrical data.
-MATLAB Integration: Implemented with MATLAB’s neural network toolbox for smooth training and visualization.
-Performance Metrics: Evaluation using RMSE, MAE, MAPE, and R² to ensure robust forecasting.
+The original implementation used random observation-level data splitting.
+
+Because multiple observations were collected during each day, measurements with related environmental conditions could appear across training, validation, and testing subsets.
+
+This limited the extent to which the evaluation measured generalisation across separate measurement days.
+
+### 3. Additional Internal MATLAB Data Division
+
+The original scripts created external training, testing, and validation sets. However, MATLAB's `fitnet()` also performs internal data division unless configured otherwise.
+
+Consequently, the effective training and validation procedure was more complicated than the external split alone suggested.
+
+### 4. Limited Dataset Size
+
+The study used 189 measurements from 21 days.
+
+This provided a practical dataset for an undergraduate experiment but limited the ability to establish reliable generalisation across different seasons, weather conditions, and operating environments.
+
+The small dataset also increased the importance of controlling model complexity and evaluating sensitivity to different training configurations.
+
+### 5. Limited Evidence of Future Forecasting Capability
+
+The original model used measurements observed at the same time as the target power output.
+
+Consequently, the experiments were more appropriately interpreted as power estimation from available measurements than as a demonstration of future solar-generation forecasting.
+
+A future-forecasting system would require an explicitly defined prediction horizon and appropriate historical or forecasted input variables.
+
+### 6. Limited Baseline Comparisons
+
+The original work did not provide a sufficiently structured comparison between the ANN and simpler predictive models under the same independent validation protocol.
+
+Without these comparisons, it was difficult to determine whether the neural network's additional complexity provided a meaningful advantage.
+
+## Subsequent Python Re-evaluation (2026)
+
+To investigate these limitations, I independently reimplemented and extended the research using Python.
+
+**Repository:** [Solar Power Prediction — Python Reimplementation](https://github.com/OluwafisayoIbrahim/solar-power-prediction-python)
+
+The updated study introduced two experimental settings:
+
+- **Electrical-input replication:** Retained the original measurement variables to investigate the behaviour of the original prediction setup.
+- **Weather-based prediction:** Used solar irradiance, temperature, humidity, and hour of day without contemporaneous electrical measurements.
+
+The Python study also introduced:
+
+- Day-grouped cross-validation using seven outer folds
+- Nested grouped cross-validation for model selection
+- Repeated experiments across three random seeds
+- Linear-regression and physics-based baseline comparisons
+- Feedforward neural networks implemented in scikit-learn, TensorFlow/Keras, and PyTorch
+- Pooled out-of-fold evaluation using MAE, RMSE, MAPE, and R²
+- Reproducible experiment configurations, automated testing, and GitHub Actions CI
+- An interactive Streamlit application for model inference
+
+### Findings from the Re-evaluation
+
+The revised experiments provided a more reliable comparison of neural-network methods and simpler predictive approaches.
+
+The weather-based experiments showed that tuned neural networks could model the relationship between environmental measurements and solar power output, but their performance was broadly comparable to linear regression on the available dataset.
+
+The matched TensorFlow/Keras and PyTorch experiments also produced similar predictive performance, without establishing a consistent advantage for either framework.
+
+The results highlighted the importance of baseline comparisons, independent evaluation, careful feature selection, and understanding the limitations of small experimental datasets.
+
+The weather-based models still used contemporaneous measurements and therefore did not establish future-time forecasting capability.
 
 ## Technologies Used
-1. MATLAB: For ANN model development and data visualization.
-2. Hardware: Pyranometers, solar panels, and digital thermometers, digitial multimeter for data collection.
 
-## Code Workflow
+**Programming and Modelling**
+- MATLAB
+- MATLAB Neural Network Toolbox
+- Feedforward Artificial Neural Networks
+- Levenberg–Marquardt Optimisation
 
-```matlab
+**Data Processing and Evaluation**
+- CSV-based data processing
+- `readtable()`
+- `mapminmax()`
+- MSE, MAE, RMSE, MAPE, and R²
 
-1. Load Data for Each Day:
+**Experimental Equipment**
+- Solar panels
+- Pyranometer
+- Digital thermometer
+- Digital multimeter
+- Supporting electrical measurement equipment
 
+## Repository Scope
 
+This repository preserves the original MATLAB-based undergraduate research implementation.
 
-data_monday = readtable('solar_data_mon_27th.csv');
-data_tuesday = readtable('solar_data_tue_28th.csv');
-% (Repeat for other days)
+The historical MATLAB scripts are retained for documentation and reproducibility rather than presented as a corrected research implementation.
 
+For the revised methodology, updated experiments, full comparisons, and Python implementations, refer to the [Python research repository](https://github.com/OluwafisayoIbrahim/solar-power-prediction-python).
 
-2. Extract Inputs and Targets:
+## Research Output
 
+**Forecasting Solar Power Generation using Artificial Neural Networks**
 
-inputs_monday = [data_monday.SolarIrradiance, data_monday.Current, ...];
-targets_monday = data_monday.Power;
+Ibrahim, O. SSRN preprint, 2024.
 
-3. Train the ANN Model:
+DOI: https://doi.org/10.2139/ssrn.4771898
 
+The original research was completed in 2023 and subsequently revisited to address methodological and evaluation limitations.
 
+## Conclusion
 
-[mae_monday, rmse_monday, r2_monday, outputs_monday] = ...
-    train_and_test_ann(inputs_monday, targets_monday, inputs_monday, targets_monday);
+This project provided my initial practical experience in applying artificial neural networks to an engineering prediction problem.
 
-Note: in this original workflow, the same data is passed as both training and testing input.
-    
-4. Plot Predicted vs. Actual Power:
+The subsequent re-evaluation extended that work beyond model implementation to examine experimental validity, model generalisation, and the interpretation of predictive results.
 
-
-
-figure;
-plot(time_monday, targets_monday, 'b-', 'LineWidth', 2);
-plot(time_monday, predicted_monday, 'r-', 'LineWidth', 2);
-legend('Actual', 'Predicted');
-grid on;
-
-5. Overall Performance Metrics:
-
-
-
-mae_week = mean([mae_monday, mae_tuesday, ...]);
-fprintf('MAE: %.2f W\n', mae_week);
-
-6. ANN Training Function:
-
-
-
-function [mae, rmse, r2, outputs] = train_and_test_ann(inputs_training, targets_training, ...)
-    net = fitnet(10); % Hidden layer size of 10
-    net.trainFcn = 'trainlm'; % Levenberg-Marquardt algorithm
-    net.trainParam.epochs = 8000;
-    net = train(net, inputs_training', targets_training');
-    outputs = sim(net, inputs_testing');
-end```
+Together, the original MATLAB study and its Python extension document the development of the research, the limitations identified, and the improvements made to the evaluation methodology.
